@@ -14,6 +14,7 @@ import com.novadart.reactnativenfc.NfcDataType;
 import org.ndeftools.Message;
 import org.ndeftools.MimeRecord;
 import org.ndeftools.Record;
+import org.ndeftools.externaltype.AndroidApplicationRecord;
 import org.ndeftools.wellknown.TextRecord;
 import org.ndeftools.wellknown.UriRecord;
 
@@ -21,8 +22,7 @@ import java.util.Iterator;
 
 public class NdefParser {
 
-    public static WritableMap parse(NdefMessage[] messages){
-        WritableMap result = new WritableNativeMap();
+    public static WritableMap parse(NdefMessage[] messages, WritableMap result){
         result.putString("type", NfcDataType.NDEF.name());
         WritableArray data = new WritableNativeArray();
         if(messages != null) {
@@ -34,7 +34,7 @@ public class NdefParser {
                 }
             }
         }
-        result.putArray("data", data);
+        result.putArray("messages", data);
         return result;
     }
 
@@ -59,7 +59,9 @@ public class NdefParser {
 
 
     private static WritableMap parseRecord(Record record) throws UnknownNdefRecordException {
-        if(record instanceof TextRecord){
+        if(record instanceof AndroidApplicationRecord) {
+            return parseAndroidApplicationRecord((AndroidApplicationRecord) record);
+        } else if(record instanceof TextRecord){
             return parseTextRecord((TextRecord)record);
         } else if(record instanceof UriRecord){
             return parseUriRecord((UriRecord)record);
@@ -90,6 +92,12 @@ public class NdefParser {
         WritableMap result = new WritableNativeMap();
         result.putString("type", NdefRecordType.MIME.name());
         result.putString("data", record.getData() != null ? Base64.encodeToString(record.getData(), Base64.DEFAULT) : null);
+        return result;
+    }
+    private static WritableMap parseAndroidApplicationRecord(AndroidApplicationRecord record){
+        WritableMap result = new WritableNativeMap();
+        result.putString("type", NdefRecordType.APP.name());
+        result.putString("data", record.getData() != null ? record.getPackageName() : null);
         return result;
     }
 }
