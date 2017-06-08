@@ -1,8 +1,9 @@
 package com.novadart.reactnativenfc;
 
 public enum NdefRecordType {
-    TEXT,
+    APP,
     URI,
     MIME,
-    APP
+    TEXT,
+    UNKNOWN
 }

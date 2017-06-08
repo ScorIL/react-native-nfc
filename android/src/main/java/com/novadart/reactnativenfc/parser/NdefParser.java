@@ -68,8 +68,15 @@ public class NdefParser {
         } else if(record instanceof MimeRecord){
             return parseMimeRecord((MimeRecord)record);
         } else {
-            throw new UnknownNdefRecordException();
+            return parseUnknownRecord(record);
         }
+    }
+
+    private static WritableMap parseUnknownRecord(Record record){
+        WritableMap result = new WritableNativeMap();
+        result.putString("type", NdefRecordType.UNKNOWN.name());
+        result.putString("class",record.getClass().getName());
+        return result;
     }
 
     private static WritableMap parseTextRecord(TextRecord record){

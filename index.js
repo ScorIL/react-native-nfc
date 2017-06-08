@@ -2,20 +2,8 @@
 
 import { NativeModules, DeviceEventEmitter } from 'react-native';
 
-export const NfcDataType = {
-    NDEF : "NDEF",
-    TAG : "TAG"
-};
-
-export const NdefRecordType = {
-    TEXT : "TEXT",
-    URI : "URI",
-    MIME : "MIME"
-};
-
-
 let _registeredToEvents = false;
-const _listeners = [];
+let _listeners = [];
 
 let _registerToEvents = () => {
     if(!_registeredToEvents){
@@ -38,6 +26,12 @@ const NFC = {};
 NFC.addListener = (callback) => {
     _listeners.push(callback);
     _registerToEvents();
+};
+
+NFC.removeListeners = () => {
+    _listeners = [];
+    _registeredToEvents = false;
+    DeviceEventEmitter.removeAllListeners('__NFC_DISCOVERED')
 };
 
 export default NFC;

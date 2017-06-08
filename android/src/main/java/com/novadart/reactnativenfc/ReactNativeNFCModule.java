@@ -1,6 +1,5 @@
 package com.novadart.reactnativenfc;
 
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -138,27 +137,20 @@ public class ReactNativeNFCModule extends ReactContextBaseJavaModule implements 
 
     @Override
     public void onHostResume() {
-        if (nfcAdapter != null) {
+        if(!startupIntentProcessed){
             if(getReactApplicationContext().getCurrentActivity() != null){ // it shouldn't be null but you never know
                 // necessary because NFC might cause the activity to start and we need to catch that data too
-                setupForegroundDispatch(getCurrentActivity(), nfcAdapter);
                 handleIntent(getReactApplicationContext().getCurrentActivity().getIntent(),true);
             }
-        } else {
-            nfcAdapter = NfcAdapter.getDefaultAdapter(this.reactContext);
+            startupIntentProcessed = true;
         }
     }
 
     @Override
-    public void onHostPause() {
-        if (nfcAdapter != null)
-            stopForegroundDispatch(getCurrentActivity(), nfcAdapter);
-    }
+    public void onHostPause() {}
 
     @Override
-    public void onHostDestroy() {
-        // Activity `onDestroy`
-    }
+    public void onHostDestroy() {}
 
     private static void setupForegroundDispatch(final Activity activity, NfcAdapter adapter) {
         final Intent intent = new Intent(activity.getApplicationContext(), activity.getClass());
